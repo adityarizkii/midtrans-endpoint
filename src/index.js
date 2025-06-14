@@ -88,7 +88,14 @@ app.post("/midtrans-webhook", express.json(), async (req, res) => {
       `Transaction ${orderId} status updated to ${transactionStatus}`
     );
 
-    res.status(200).send("OK");
+    // Kirim response dengan data transaksi
+    res.status(200).json({
+      order_id: orderId,
+      transaction_status: transactionStatus,
+      payment_type: paymentType,
+      gross_amount: grossAmount,
+      transaction_time: transactionTime,
+    });
   } catch (error) {
     console.error("Error processing webhook:", error);
     res.status(500).json({
