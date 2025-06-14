@@ -59,26 +59,38 @@ app.post("/snap-token", async (req, res) => {
 
 // Webhook handler
 app.post("/midtrans-webhook", express.json(), async (req, res) => {
-  console.log("Webhook received:", req.body);
-
   try {
     const notificationJson = req.body;
     console.log("Webhook received:", notificationJson);
 
-    const orderId = notificationJson.order_id;
-    const transactionStatus = notificationJson.transaction_status;
-    const paymentType = notificationJson.payment_type;
-    const grossAmount = notificationJson.gross_amount;
-    const transactionTime = notificationJson.transaction_time;
+    const {
+      order_id,
+      transaction_status,
+      payment_type,
+      gross_amount,
+      transaction_time,
+      transaction_id,
+      settlement_time,
+      va_numbers,
+      fraud_status,
+      currency,
+      expiry_time,
+    } = notificationJson;
 
     // Simpan data ke Firestore
-    await db.collection("transaction").doc(orderId).set(
+    await db.collection("transaction").doc(order_id).set(
       {
-        order_id: orderId,
-        transaction_status: transactionStatus,
-        payment_type: paymentType,
-        gross_amount: grossAmount,
-        transaction_time: transactionTime,
+        order_id,
+        transaction_id,
+        transaction_status,
+        payment_type,
+        gross_amount,
+        transaction_time,
+        settlement_time,
+        va_numbers,
+        fraud_status,
+        currency,
+        expiry_time,
         notification_data: notificationJson,
         updated_at: new Date().toISOString(),
       },
@@ -87,16 +99,22 @@ app.post("/midtrans-webhook", express.json(), async (req, res) => {
 
     // Log untuk monitoring
     console.log(
-      `Transaction ${orderId} status updated to ${transactionStatus}`
+      `Transaction ${order_id} status updated to ${transaction_status}`
     );
 
     // Kirim response dengan data transaksi
     res.status(200).json({
-      order_id: orderId,
-      transaction_status: transactionStatus,
-      payment_type: paymentType,
-      gross_amount: grossAmount,
-      transaction_time: transactionTime,
+      order_id,
+      transaction_id,
+      transaction_status,
+      payment_type,
+      gross_amount,
+      transaction_time,
+      settlement_time,
+      va_numbers,
+      fraud_status,
+      currency,
+      expiry_time,
     });
   } catch (error) {
     console.error("Error processing webhook:", error);
