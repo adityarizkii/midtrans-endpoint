@@ -20,6 +20,8 @@ const snap = new midtransClient.Snap({
 
 // Health check endpoint
 app.get("/health", (req, res) => {
+  console.log("health check");
+
   res.json({ status: "ok" });
 });
 
