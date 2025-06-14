@@ -60,72 +60,72 @@ app.post("/snap-token", async (req, res) => {
 });
 
 // Webhook handler
-app.post("/midtrans-webhook", express.json(), async (req, res) => {
-  try {
-    const notificationJson = req.body;
-    console.log("Webhook received:", notificationJson);
+// app.post("/midtrans-webhook", express.json(), async (req, res) => {
+//   try {
+//     const notificationJson = req.body;
+//     console.log("Webhook received:", notificationJson);
 
-    const {
-      order_id,
-      transaction_status,
-      payment_type,
-      gross_amount,
-      transaction_time,
-      transaction_id,
-      settlement_time,
-      va_numbers,
-      fraud_status,
-      currency,
-      expiry_time,
-    } = notificationJson;
+//     const {
+//       order_id,
+//       transaction_status,
+//       payment_type,
+//       gross_amount,
+//       transaction_time,
+//       transaction_id,
+//       settlement_time,
+//       va_numbers,
+//       fraud_status,
+//       currency,
+//       expiry_time,
+//     } = notificationJson;
 
-    // Simpan data ke Firestore
-    await db.collection("transaction").doc(order_id).set(
-      {
-        order_id,
-        transaction_id,
-        transaction_status,
-        payment_type,
-        gross_amount,
-        transaction_time,
-        settlement_time,
-        va_numbers,
-        fraud_status,
-        currency,
-        expiry_time,
-        notification_data: notificationJson,
-        updated_at: new Date().toISOString(),
-      },
-      { merge: true }
-    );
+//     // Simpan data ke Firestore
+//     await db.collection("transaction").doc(order_id).set(
+//       {
+//         order_id,
+//         transaction_id,
+//         transaction_status,
+//         payment_type,
+//         gross_amount,
+//         transaction_time,
+//         settlement_time,
+//         va_numbers,
+//         fraud_status,
+//         currency,
+//         expiry_time,
+//         notification_data: notificationJson,
+//         updated_at: new Date().toISOString(),
+//       },
+//       { merge: true }
+//     );
 
-    // Log untuk monitoring
-    console.log(
-      `Transaction ${order_id} status updated to ${transaction_status}`
-    );
+//     // Log untuk monitoring
+//     console.log(
+//       `Transaction ${order_id} status updated to ${transaction_status}`
+//     );
 
-    // Kirim response dengan data transaksi
-    res.status(200).json({
-      order_id,
-      transaction_id,
-      transaction_status,
-      payment_type,
-      gross_amount,
-      transaction_time,
-      settlement_time,
-      va_numbers,
-      fraud_status,
-      currency,
-      expiry_time,
-    });
-  } catch (error) {
-    console.error("Error processing webhook:", error);
-    res.status(500).json({
-      error: "Failed to process webhook",
-      message: error.message,
-    });
-  }
-});
+//     // Kirim response dengan data transaksi
+//     res.status(200).json({
+//       order_id,
+//       transaction_id,
+//       transaction_status,
+//       payment_type,
+//       gross_amount,
+//       transaction_time,
+//       settlement_time,
+//       va_numbers,
+//       fraud_status,
+//       currency,
+//       expiry_time,
+//     });
+//   } catch (error) {
+//     console.error("Error processing webhook:", error);
+//     res.status(500).json({
+//       error: "Failed to process webhook",
+//       message: error.message,
+//     });
+//   }
+// });
 
 // Error handling middleware
 app.use((err, req, res, next) => {
