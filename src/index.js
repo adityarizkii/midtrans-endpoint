@@ -59,6 +59,8 @@ app.post("/snap-token", async (req, res) => {
 
 // Webhook handler
 app.post("/midtrans-webhook", express.json(), async (req, res) => {
+  console.log("Webhook received:", req.body);
+
   try {
     const notificationJson = req.body;
     console.log("Webhook received:", notificationJson);
