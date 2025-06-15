@@ -13,7 +13,14 @@ app.use(express.json());
 
 // Initialize Midtrans Snap
 const snap = new midtransClient.Snap({
-  isProduction: process.env.MIDTRANS_IS_PRODUCTION === "true",
+  isProduction: process.env.MIDTRANS_IS_PRODUCTION === "false",
+  serverKey: process.env.MIDTRANS_SERVER_KEY,
+  clientKey: process.env.MIDTRANS_CLIENT_KEY,
+});
+
+// Initialize Midtrans Core API
+const core = new midtransClient.CoreApi({
+  isProduction: process.env.MIDTRANS_IS_PRODUCTION === "false",
   serverKey: process.env.MIDTRANS_SERVER_KEY,
   clientKey: process.env.MIDTRANS_CLIENT_KEY,
 });
@@ -21,8 +28,37 @@ const snap = new midtransClient.Snap({
 // Health check endpoint
 app.get("/health", (req, res) => {
   console.log("health check");
-
   res.json({ status: "ok" });
+});
+
+// Check transaction status endpoint
+app.get("/check/:orderId", async (req, res) => {
+  try {
+    const { orderId } = req.params;
+
+    // Hit Midtrans API menggunakan Core API
+    const response = await core.transaction.status(orderId);
+
+    // Simpan status terbaru ke Firestore
+    await db
+      .collection("transaction")
+      .doc(orderId)
+      .set(
+        {
+          ...response,
+          updated_at: new Date().toISOString(),
+        },
+        { merge: true }
+      );
+
+    res.json(response);
+  } catch (error) {
+    console.error("Error checking transaction status:", error);
+    res.status(500).json({
+      error: "Failed to check transaction status",
+      message: error.message,
+    });
+  }
 });
 
 // Create Snap token endpoint
