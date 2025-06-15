@@ -46,7 +46,7 @@ app.get("/check/:orderId", async (req, res) => {
         .collection("transaction")
         .doc(orderId)
         .set({
-          amount: response.gross_amount,
+          amount: parseInt(response.gross_amount),
           created_at: new Date().toLocaleString("en-US", {
             timeZone: "Asia/Jakarta",
             year: "numeric",
