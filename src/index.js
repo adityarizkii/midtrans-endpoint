@@ -39,14 +39,16 @@ app.get("/check/:orderId", async (req, res) => {
     // Hit Midtrans API menggunakan Core API
     const response = await core.transaction.status(orderId);
 
-    // Simpan status terbaru ke Firestore
-    await db
-      .collection("transaction")
-      .doc(orderId)
-      .set({
-        ...response,
-        updated_at: new Date().toISOString(),
-      });
+    // Hanya simpan ke Firestore jika status settlement
+    if (response.transaction_status === "settlement") {
+      await db
+        .collection("transaction")
+        .doc(orderId)
+        .set({
+          ...response,
+          updated_at: new Date().toISOString(),
+        });
+    }
 
     res.json(response);
   } catch (error) {
