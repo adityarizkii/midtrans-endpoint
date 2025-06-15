@@ -13,14 +13,14 @@ app.use(express.json());
 
 // Initialize Midtrans Snap
 const snap = new midtransClient.Snap({
-  isProduction: process.env.MIDTRANS_IS_PRODUCTION === "false",
+  isProduction: false,
   serverKey: process.env.MIDTRANS_SERVER_KEY,
   clientKey: process.env.MIDTRANS_CLIENT_KEY,
 });
 
 // Initialize Midtrans Core API
 const core = new midtransClient.CoreApi({
-  isProduction: process.env.MIDTRANS_IS_PRODUCTION === "false",
+  isProduction: false,
   serverKey: process.env.MIDTRANS_SERVER_KEY,
   clientKey: process.env.MIDTRANS_CLIENT_KEY,
 });
