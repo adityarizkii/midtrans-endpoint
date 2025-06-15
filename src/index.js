@@ -35,8 +35,7 @@ app.get("/health", (req, res) => {
 app.get("/check/:orderId", async (req, res) => {
   try {
     const { orderId } = req.params;
-    const { customer_email } = req.query;
-    const { room } = req.query;
+    const { customer_email, room, customer_name } = req.query;
 
     // Hit Midtrans API menggunakan Core API
     const response = await core.transaction.status(orderId);
@@ -47,10 +46,23 @@ app.get("/check/:orderId", async (req, res) => {
         .collection("transaction")
         .doc(orderId)
         .set({
-          ...response,
+          amount: response.gross_amount,
+          created_at: new Date().toLocaleString("en-US", {
+            timeZone: "Asia/Jakarta",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+            hour: "numeric",
+            minute: "numeric",
+            second: "numeric",
+            hour12: true,
+          }),
           customer_email,
-          room,
-          updated_at: new Date().toISOString(),
+          customer_name,
+          order_id: orderId,
+          room: parseInt(room),
+          status: response.transaction_status,
+          token: response.token || "",
         });
     }
 
