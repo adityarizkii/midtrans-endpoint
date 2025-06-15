@@ -43,13 +43,10 @@ app.get("/check/:orderId", async (req, res) => {
     await db
       .collection("transaction")
       .doc(orderId)
-      .set(
-        {
-          ...response,
-          updated_at: new Date().toISOString(),
-        },
-        { merge: true }
-      );
+      .set({
+        ...response,
+        updated_at: new Date().toISOString(),
+      });
 
     res.json(response);
   } catch (error) {
