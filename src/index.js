@@ -2,7 +2,7 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const midtransClient = require("midtrans-client");
-const { db } = require("./config/firebase");
+const { db, admin } = require("./config/firebase");
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -47,16 +47,7 @@ app.get("/check/:orderId", async (req, res) => {
         .doc(orderId)
         .set({
           amount: parseInt(response.gross_amount),
-          created_at: new Date().toLocaleString("en-US", {
-            timeZone: "Asia/Jakarta",
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-            hour: "numeric",
-            minute: "numeric",
-            second: "numeric",
-            hour12: true,
-          }),
+          created_at: admin.firestore.Timestamp.now(),
           customer_email,
           customer_name,
           order_id: orderId,
