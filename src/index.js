@@ -35,6 +35,7 @@ app.get("/health", (req, res) => {
 app.get("/check/:orderId", async (req, res) => {
   try {
     const { orderId } = req.params;
+    const { customer_email } = req.query;
 
     // Hit Midtrans API menggunakan Core API
     const response = await core.transaction.status(orderId);
@@ -46,6 +47,7 @@ app.get("/check/:orderId", async (req, res) => {
         .doc(orderId)
         .set({
           ...response,
+          customer_email,
           updated_at: new Date().toISOString(),
         });
     }
